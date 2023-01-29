@@ -10,23 +10,23 @@ load_dotenv()
 DATABASE_URL = os.getenv('DATABASE_URL')
 
 
-class Database:
+class BaseDB:
 
     url = None
 
     def __init__(self):
         self.session = psycopg2.connect(self.url)
 
-    def insert(self, name) -> int:
+    def insert(self, table_name, name) -> int:
         """Insert record into database. Return id of record which has
         been added in database"""
         cursor = self.session.cursor()
 
         try:
             cursor.execute(
-                """INSERT INTO urls (name, created_at) 
+                """INSERT INTO %s (name, created_at) 
                 VALUES (%s, %s) RETURNING id;""",
-                (name, date.today())
+                (table_name, name, date.today())
             )
 
             record_id = cursor.fetchone()[0]
@@ -54,6 +54,6 @@ class Database:
         return data if data is not None else None
 
 
-class MainDatabase(Database):
+class Database(BaseDB):
 
     url = DATABASE_URL
