@@ -2,10 +2,6 @@
 
 {% block body %}
 
-{% for site in sites %}
-
-{{ site[1] }}
-
-{% endfor %}
+{% include 'components/all_sites_table.html' %}
 
 {% endblock %}

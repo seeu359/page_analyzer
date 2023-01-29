@@ -1,9 +1,10 @@
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, url_for, flash
 
 from page_analyzer import db
 from page_analyzer.services import get_normalize_url, is_valid_url
 
 app = Flask(__name__)
+app.secret_key = 'super_secret'
 
 
 @app.route('/')
@@ -16,24 +17,26 @@ def urls(database: db.MainDatabase = db.MainDatabase()):
     url = request.form.get('url')
 
     if not is_valid_url(url):
-        return redirect(url_for('redirect_test'))
+        flash('Некорректный URL', 'error')
+        return redirect(url_for('main'))
 
     normalize_url = get_normalize_url(url)
-    database.insert(normalize_url)
-    return redirect(url_for('main'), code=302)
+    _id = database.insert(normalize_url)
+    flash('Страница успешно добавлена', 'success')
+    return redirect(url_for('site', _id=_id), code=302)
 
 
-@app.route('/urls/<int:id>')
+@app.route('/urls/<int:_id>')
 def site(
         _id: int,
         database: db.MainDatabase = db.MainDatabase(),
 ):
+    _site = database.select(_id)
 
-    data = database.select(_id)
-
-    if data is None:
+    if _site is None:
         return redirect(url_for('main'))
-    return data
+
+    return render_template('site.html', site=_site)
 
 
 @app.route('/urls')

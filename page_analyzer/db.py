@@ -17,17 +17,23 @@ class Database:
     def __init__(self):
         self.session = psycopg2.connect(self.url)
 
-    def insert(self, name):
+    def insert(self, name) -> int:
+        """Insert record into database. Return id of record which has
+        been added in database"""
         cursor = self.session.cursor()
 
         try:
             cursor.execute(
-                """INSERT INTO urls (name, created_at) VALUES (%s, %s);""",
+                """INSERT INTO urls (name, created_at) 
+                VALUES (%s, %s) RETURNING id;""",
                 (name, date.today())
             )
-            self.session.commit()
 
-        except UniqueViolation:
+            record_id = cursor.fetchone()[0]
+            self.session.commit()
+            return record_id
+
+        except UniqueViolation:  # Подумать, что делать с обработкой ошибок, так как тут может быть куча всего
             self.session.rollback()
             raise UniqueViolation()
 
@@ -40,12 +46,12 @@ class Database:
             return data
 
         cursor.execute(
-            """SELECT name FROM urls WHERE id=%s;""",
+            """SELECT * FROM urls WHERE id=%s;""",
             (_id,)
         )
 
         data = cursor.fetchone()
-        return data[0] if data is not None else None
+        return data if data is not None else None
 
 
 class MainDatabase(Database):

@@ -1,0 +1,32 @@
+{% with flash = get_flashed_messages(category_filter=["success"]) %}
+{% if flash %}
+{% for msg in flash %}
+
+<div class="alert alert-success" role="alert">
+  {{ msg }}
+</div>
+
+{% endfor %}
+
+<h1>Сайт: {{ site[1] }}</h1>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-hover text-nowrap" data-test="url">
+      <tbody>
+        <tr>
+          <td>ID</td>
+          <td>{{ site[0] }}</td>
+        </tr>
+        <tr>
+          <td>Имя</td>
+          <td>{{ site[1] }}</td>
+        </tr>
+        <tr>
+          <td>Дата создания</td>
+          <td>{{ site[2]  }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+{% endif %}
+{% endwith %}
