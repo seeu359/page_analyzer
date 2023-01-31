@@ -19,9 +19,8 @@
               {{ site[1] }}
             </a>
           </td>
-
-          <td></td>
-          <td></td>
+          <td>{% if site[2] %} {{ site[2] | datetime_format }} {% else %}  {% endif %}</td>
+          <td>{{ site[3] or '' }}</td>
 
         </tr>
     {% endfor %}
@@ -30,4 +29,4 @@
   </table>
 </div>
 
-    </div>
+</div>
