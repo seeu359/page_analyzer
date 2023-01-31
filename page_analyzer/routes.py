@@ -32,14 +32,14 @@ def urls(database: db.Database = db.Database()):
 
     normalize_url = s.get_normalize_url(url)
 
-    cursor.execute("""INSERT INTO urls 
-                    (name, created_at) 
+    cursor.execute("""INSERT INTO urls
+                    (name, created_at)
                     VALUES (%s, %s) RETURNING id;""",
                    (normalize_url,
                     datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
     _id = cursor.fetchone()[0]
-    cursor.execute("""INSERT INTO all_sites 
-                    (url_id) 
+    cursor.execute("""INSERT INTO all_sites
+                    (url_id)
                     VALUES (%s);""",
                    (_id,))
     database.session.commit()
@@ -54,7 +54,7 @@ def site(
         database: db.Database = db.Database(),
 ):
     cursor = database.session.cursor()
-    cursor.execute("""SELECT * FROM urls 
+    cursor.execute("""SELECT * FROM urls
                     WHERE id=%s""",
                    (_id,))
     _site = cursor.fetchone()
@@ -62,7 +62,7 @@ def site(
     if _site is None:
         return redirect(url_for('routes.main'))
 
-    cursor.execute("""SELECT * FROM url_checks 
+    cursor.execute("""SELECT * FROM url_checks
                     WHERE url_id=%s
                     ORDER BY created_at DESC""",
                    (_id,))
@@ -73,7 +73,7 @@ def site(
 @routes.route('/urls')
 def all_sites(database: db.Database = db.Database()):
     cursor = database.session.cursor()
-    cursor.execute("""SELECT all_sites.url_id, urls.name, all_sites.created_at, 
+    cursor.execute("""SELECT all_sites.url_id, urls.name, all_sites.created_at,
                     all_sites.status_code
                     FROM all_sites
                     INNER JOIN urls ON all_sites.url_id = urls.id
@@ -100,7 +100,7 @@ def check_url(
         return redirect(url_for('routes.site', _id=_id))
 
     seo_info = s.get_seo_info(resource_url)
-    cursor.execute("""INSERT INTO url_checks 
+    cursor.execute("""INSERT INTO url_checks
                     (url_id, status_code, h1, title, description, created_at)
                     VALUES (%s, %s, %s, %s, %s, %s)""",
                    (
@@ -108,8 +108,8 @@ def check_url(
                        seo_info.content,
                        datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                    )
-    cursor.execute("""UPDATE all_sites 
-                    SET created_at = %s, status_code = %s 
+    cursor.execute("""UPDATE all_sites
+                    SET created_at = %s, status_code = %s
                     WHERE url_id = %s""",
                    (datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     status_code, _id))

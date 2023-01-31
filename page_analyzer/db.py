@@ -9,7 +9,6 @@ DATABASE_URL = os.getenv('DATABASE_URL')
 
 
 class BaseDB:
-
     url = None
 
     def __init__(self):
@@ -17,5 +16,4 @@ class BaseDB:
 
 
 class Database(BaseDB):
-
     url = DATABASE_URL

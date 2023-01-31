@@ -1,10 +1,10 @@
-from urllib.parse import urlparse
 from enum import Enum
 from typing import NamedTuple
-from bs4 import BeautifulSoup
+from urllib.parse import urlparse
 
-import validators
 import requests
+import validators
+from bs4 import BeautifulSoup
 
 StatusCode = int
 
@@ -47,8 +47,8 @@ def get_seo_info(url: str) -> UrlSEOInfo:
     data = requests.get(url).text
     parser = BeautifulSoup(data, 'html.parser')
 
-    h1 = parser.h1.text if parser.h1 is not None else ''
-    title = parser.title.text if parser.title is not None else ''
+    h1 = parser.h1.text if parser.h1 else ''
+    title = parser.title.text if parser.title else ''
     meta = parser.find_all('meta')
     content = ''
 
