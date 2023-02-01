@@ -4,7 +4,9 @@ from urllib.parse import urlparse
 
 import requests
 import validators
-from bs4 import BeautifulSoup
+import bs4
+
+from page_analyzer.exceptions import VerificationError
 
 StatusCode = int
 
@@ -20,10 +22,7 @@ class FlashMessages(Enum):
     PAGE_SUCCESSFULLY_ADDED = 'Страница успешно добавлена'
     PAGE_SUCCESSFULLY_CHECKED = 'Страница успешно проверена'
     VERIFICATION_ERROR = 'Произошла ошибка при проверке'
-
-
-class VerificationError(Exception):
-    pass
+    PAGE_ALREADY_EXIST = 'Страница уже существует'
 
 
 def is_valid_url(url: str) -> bool:
@@ -45,7 +44,7 @@ def get_status_code(url: str) -> StatusCode:
 
 def get_seo_info(url: str) -> UrlSEOInfo:
     data = requests.get(url).text
-    parser = BeautifulSoup(data, 'html.parser')
+    parser = bs4.BeautifulSoup(data, 'html.parser')
 
     h1 = parser.h1.text if parser.h1 else ''
     title = parser.title.text if parser.title else ''
@@ -53,9 +52,15 @@ def get_seo_info(url: str) -> UrlSEOInfo:
     content = ''
 
     for tag in meta:
-        tag_attrs = tag.attrs
-        if 'content' in tag_attrs and 'name' in tag_attrs \
-                and tag['name'] == 'description':
+        if _have_tags_in_meta(tag):
             content = tag['content']
 
     return UrlSEOInfo(h1=h1, title=title, content=content)
+
+
+def _have_tags_in_meta(tag: bs4.Tag) -> bool:
+    content_tag = 'content'
+    name_tag = 'name'
+    name_tag_value = 'description'
+    return content_tag in tag.attrs and name_tag in tag.attrs \
+        and tag[name_tag] == name_tag_value

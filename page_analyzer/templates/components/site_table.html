@@ -1,10 +1,11 @@
-{% with flash = get_flashed_messages(category_filter=["success"]) %}
+{% with flash = get_flashed_messages(with_categories=true) %}
 {% if flash %}
-{% for msg in flash %}
-
-<div class="alert alert-success" role="alert">
-  {{ msg }}
-</div>
+{% for cat, msg in flash %}
+  {% if cat == 'success' %}
+    <div class="alert alert-success" role="alert"> {{ msg }} </div>
+  {% else %}
+    <div class="alert alert-primary" role="alert"> {{ msg }} </div>
+{% endif %}
 
 {% endfor %}
 {% endif %}
