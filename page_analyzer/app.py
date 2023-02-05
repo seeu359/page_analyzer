@@ -2,8 +2,7 @@ import os
 
 from flask import Flask
 
-from page_analyzer.routes import main_routes, filters
-
+from page_analyzer.routes import filters, main_routes
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY')

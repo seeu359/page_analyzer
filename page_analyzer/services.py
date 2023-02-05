@@ -8,7 +8,7 @@ import validators
 
 from page_analyzer.exceptions import VerificationError
 
-StatusCode = int
+HTTPStatusCode = int
 
 
 class UrlSEOInfo(NamedTuple):
@@ -35,7 +35,7 @@ def get_normalize_url(url: str) -> str:
     return f'{scheme}://{netloc}'
 
 
-def get_status_code(url: str) -> StatusCode:
+def get_status_code(url: str) -> HTTPStatusCode:
     try:
         return requests.get(url).status_code
     except Exception:

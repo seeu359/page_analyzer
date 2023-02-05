@@ -37,13 +37,13 @@ def urls(database: db.Database = db.Database()):
     site_id = database.cursor.fetchone()
     if not site_id:
 
-        database.cursor.execute("""INSERT INTO urls (name, created_at) 
+        database.cursor.execute("""INSERT INTO urls (name, created_at)
                                 VALUES (%s, %s)
                                 RETURNING id;""",
                                 (normalize_url,
                                  datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         site_id = database.cursor.fetchone()
-        database.cursor.execute("""INSERT INTO all_sites (url_id) 
+        database.cursor.execute("""INSERT INTO all_sites (url_id)
                                 VALUES (%s);""",
                                 (site_id,))
         database.session.commit()

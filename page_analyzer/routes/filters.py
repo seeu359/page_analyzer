@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from flask import Blueprint, render_template
 
 filters = Blueprint('filters', __name__)
