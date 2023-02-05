@@ -1,0 +1,4 @@
+FLASH_SUCCESS = 'success'
+FLASH_ERROR = 'error'
+FLASH_NOTIFY = 'notify'
+HTTP_404_NOT_FOUND = 404

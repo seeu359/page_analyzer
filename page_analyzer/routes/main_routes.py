@@ -4,12 +4,9 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from page_analyzer import db
 from page_analyzer import services as s
+from page_analyzer import constants
 
 routes = Blueprint('routes', __name__,)
-
-FLASH_SUCCESS = 'success'
-FLASH_ERROR = 'error'
-FLASH_NOTIFY = 'notify'
 
 
 @routes.app_template_filter('datetime_format')
@@ -27,7 +24,7 @@ def urls(database: db.Database = db.Database()):
     url = request.form.get('url')
 
     if not s.is_valid_url(url):
-        flash(s.FlashMessages.INCORRECT_URL.value, FLASH_ERROR)
+        flash(s.FlashMessages.INCORRECT_URL.value, constants.FLASH_ERROR)
         return redirect(url_for('routes.main'))
 
     normalize_url = s.get_normalize_url(url)
@@ -35,6 +32,7 @@ def urls(database: db.Database = db.Database()):
     database.cursor.execute("""SELECT id FROM urls WHERE name=%s""",
                             (normalize_url,))
     site_id = database.cursor.fetchone()
+
     if not site_id:
 
         database.cursor.execute("""INSERT INTO urls (name, created_at)
@@ -48,9 +46,11 @@ def urls(database: db.Database = db.Database()):
                                 (site_id,))
         database.session.commit()
 
-        flash(s.FlashMessages.PAGE_SUCCESSFULLY_ADDED.value, FLASH_SUCCESS)
+        flash(s.FlashMessages.PAGE_SUCCESSFULLY_ADDED.value,
+              constants.FLASH_SUCCESS)
     else:
-        flash(s.FlashMessages.PAGE_ALREADY_EXIST.value, FLASH_NOTIFY)
+        flash(s.FlashMessages.PAGE_ALREADY_EXIST.value,
+              constants.FLASH_NOTIFY)
 
     return redirect(url_for('routes.site', _id=site_id[0]), code=302)
 
@@ -103,7 +103,7 @@ def check_url(
     try:
         status_code = s.get_status_code(resource_url)
     except s.VerificationError as message:
-        flash(str(message), FLASH_ERROR)
+        flash(str(message), constants.FLASH_ERROR)
         return redirect(url_for('routes.site', _id=_id))
 
     seo_info = s.get_seo_info(resource_url)
@@ -122,5 +122,6 @@ def check_url(
                     status_code, _id))
 
     database.session.commit()
-    flash(s.FlashMessages.PAGE_SUCCESSFULLY_CHECKED.value, FLASH_SUCCESS)
+    flash(s.FlashMessages.PAGE_SUCCESSFULLY_CHECKED.value,
+          constants.FLASH_SUCCESS)
     return redirect(url_for('routes.site', _id=_id))
