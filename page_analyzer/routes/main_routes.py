@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for, make_response
 
 from page_analyzer import constants, db
 from page_analyzer import services as s
@@ -14,7 +14,7 @@ def datetime_format(date: datetime, _format='%Y-%m-%d'):
     return date.strftime(_format)
 
 
-@routes.route('/')
+@routes.route('/', methods=['GET', 'POST'])
 def main():
     return render_template('base.html')
 
@@ -25,7 +25,8 @@ def urls(database: db.Database = db.Database()):
 
     if not s.is_valid_url(url):
         flash(s.FlashMessages.INCORRECT_URL.value, constants.FLASH_ERROR)
-        return redirect(url_for('routes.main'))
+        return render_template('base.html'), \
+            constants.HTTP_422_UNPROCESSABLE_ENTITY
 
     normalize_url = s.get_normalize_url(url)
 
@@ -54,7 +55,7 @@ def urls(database: db.Database = db.Database()):
             flash(s.FlashMessages.PAGE_ALREADY_EXIST.value,
                   constants.FLASH_NOTIFY)
 
-    return redirect(url_for('routes.site', _id=site_id[0]), code=302)
+    return redirect(url_for('routes.site', _id=site_id[0]))
 
 
 @routes.route('/urls/<int:_id>')
