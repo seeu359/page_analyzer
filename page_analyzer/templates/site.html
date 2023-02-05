@@ -2,6 +2,25 @@
 
 {% block body %}
 
+{% with flash = get_flashed_messages(with_categories=true) %}
+{% if flash %}
+{% for cat, msg in flash %}
+
+    <div {% if cat == 'success' %}
+      class="alert alert-success"
+      {% elif cat == 'error' %}
+      class="alert alert-danger"
+      {% else %}
+      class="alert alert-primary"
+      {% endif %}
+        role="alert"> {{ msg }}
+  </div>
+
+
+{% endfor %}
+{% endif %}
+{% endwith %}
+
 {% include 'components/site_table.html' %}
 
 {% include 'components/check_table.html' %}

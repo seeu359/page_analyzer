@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from flask import Blueprint, render_template
+
 from page_analyzer.constants import HTTP_404_NOT_FOUND
 
 filters = Blueprint('filters', __name__)

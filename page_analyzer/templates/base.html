@@ -22,21 +22,20 @@
   </div>
 </nav>
 
-  {% with flash = get_flashed_messages(category_filter=["error"]) %}
-    {% if flash %}
-    {% for msg in flash %}
-
-      <div class="alert alert-danger" role="alert">
-        {{ msg }}
-      </div>
-  {% endfor %}
-  {% endif %}
-  {% endwith %}
-
   <body class="min-vh-100 d-flex flex-column">
 
     <main class="flex-grow-1">
       {% block body %}
+      {% with flash = get_flashed_messages(category_filter=["error"]) %}
+        {% if flash %}
+        {% for msg in flash %}
+
+          <div class="alert alert-danger" role="alert">
+            {{ msg }}
+          </div>
+      {% endfor %}
+      {% endif %}
+      {% endwith %}
 
       {% include 'components/enter_url.html' %}
 

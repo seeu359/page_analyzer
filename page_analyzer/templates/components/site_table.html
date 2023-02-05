@@ -1,15 +1,3 @@
-{% with flash = get_flashed_messages(with_categories=true) %}
-{% if flash %}
-{% for cat, msg in flash %}
-  {% if cat == 'success' %}
-    <div class="alert alert-success" role="alert"> {{ msg }} </div>
-  {% else %}
-    <div class="alert alert-primary" role="alert"> {{ msg }} </div>
-{% endif %}
-
-{% endfor %}
-{% endif %}
-{% endwith %}
 <h1>Сайт: {{ site[1] }}</h1>
 
 <div class="table-responsive">
