@@ -2,9 +2,9 @@ from enum import Enum
 from typing import NamedTuple
 from urllib.parse import urlparse
 
+import bs4
 import requests
 import validators
-import bs4
 
 from page_analyzer.exceptions import VerificationError
 

@@ -1,11 +1,9 @@
 from datetime import datetime
 
-import psycopg2.errors
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from page_analyzer import db
 from page_analyzer import services as s
-from page_analyzer.exceptions import DuplicateURL
 
 routes = Blueprint('routes', __name__,)
 
@@ -34,25 +32,27 @@ def urls(database: db.Database = db.Database()):
 
     normalize_url = s.get_normalize_url(url)
 
-    urls_query = """INSERT INTO urls (name, created_at) 
-    VALUES (%s, %s)
-    RETURNING id;"""
-    urls_params = (normalize_url, datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    database.cursor.execute("""SELECT id FROM urls WHERE name=%s""",
+                            (normalize_url,))
+    site_id = database.cursor.fetchone()
+    if not site_id:
 
-    try:
-        database.insert(urls_query, urls_params)
-    except DuplicateURL:
+        database.cursor.execute("""INSERT INTO urls (name, created_at) 
+                                VALUES (%s, %s)
+                                RETURNING id;""",
+                                (normalize_url,
+                                 datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+        site_id = database.cursor.fetchone()
+        database.cursor.execute("""INSERT INTO all_sites (url_id) 
+                                VALUES (%s);""",
+                                (site_id,))
+        database.session.commit()
+
+        flash(s.FlashMessages.PAGE_SUCCESSFULLY_ADDED.value, FLASH_SUCCESS)
+    else:
         flash(s.FlashMessages.PAGE_ALREADY_EXIST.value, FLASH_NOTIFY)
-        return redirect(url_for(
-            'routes.site', _id=database.object_id, code=302)
-        )
 
-    all_sites_query = """INSERT INTO all_sites (url_id) VALUES (%s);"""
-    all_sites_params = (database.object_id,)
-    database.insert(all_sites_query, all_sites_params)
-
-    flash(s.FlashMessages.PAGE_SUCCESSFULLY_ADDED.value, FLASH_SUCCESS)
-    return redirect(url_for('routes.site', _id=database.object_id), code=302)
+    return redirect(url_for('routes.site', _id=site_id[0]), code=302)
 
 
 @routes.route('/urls/<int:_id>')
@@ -84,7 +84,7 @@ def all_sites(database: db.Database = db.Database()):
                     all_sites.status_code
                     FROM all_sites
                     INNER JOIN urls ON all_sites.url_id = urls.id
-                    ORDER BY all_sites.created_at DESC""")
+                    ORDER BY urls.created_at DESC""")
 
     sites = cursor.fetchall()
     return render_template('all_sites.html', sites=sites)
