@@ -7,6 +7,8 @@ import requests
 import validators
 
 from page_analyzer.exceptions import VerificationError
+from page_analyzer.constants import HTTP_200_OK
+
 
 HTTPStatusCode = int
 
@@ -36,10 +38,15 @@ def get_normalize_url(url: str) -> str:
 
 
 def get_status_code(url: str) -> HTTPStatusCode:
+    exception = VerificationError(FlashMessages.VERIFICATION_ERROR.value)
+
     try:
-        return requests.get(url).status_code
+        status_code = requests.get(url).status_code
+        if status_code != HTTP_200_OK:
+            raise exception
+        return status_code
     except Exception:
-        raise VerificationError(FlashMessages.VERIFICATION_ERROR.value)
+        raise exception
 
 
 def get_seo_info(url: str) -> UrlSEOInfo:

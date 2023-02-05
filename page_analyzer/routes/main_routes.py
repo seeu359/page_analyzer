@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import Blueprint, flash, redirect, render_template, request, url_for, make_response
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from page_analyzer import constants, db
 from page_analyzer import services as s
