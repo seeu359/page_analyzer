@@ -1,4 +1,4 @@
-name: pytest-check
+name: linter-check
 
 on:
   - push
