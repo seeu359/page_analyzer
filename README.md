@@ -22,4 +22,5 @@ A site that analyzes said pages for SEO suitability similar to varvy
 ### Environment variables:
 
 DATABASE_URL = postgresql://{username}:{password}@{host}:{port}/{db_name}
+
 SECRET_KEY=
