@@ -9,12 +9,7 @@ from page_analyzer.exceptions import VerificationError
 routes = Blueprint('routes', __name__,)
 
 
-@routes.app_template_filter('datetime_format')
-def datetime_format(date: datetime, _format='%Y-%m-%d'):
-    return date.strftime(_format)
-
-
-@routes.route('/', methods=['GET', 'POST'])
+@routes.route('/')
 def main():
     return render_template('base.html')
 
