@@ -3,8 +3,7 @@ from datetime import datetime
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from page_analyzer import constants, db
-from page_analyzer import services as s
-from page_analyzer.exceptions import VerificationError
+from page_analyzer import services
 
 routes = Blueprint('routes', __name__,)
 
@@ -18,12 +17,14 @@ def main():
 def urls(database: db.Database = db.Database()):
     url = request.form.get('url')
 
-    if not s.is_valid_url(url):
-        flash(s.FlashMessages.INCORRECT_URL.value, constants.FLASH_ERROR)
+    if not services.is_valid_url(url):
+        flash(
+            services.FlashMessages.INCORRECT_URL.value, constants.FLASH_ERROR
+        )
         return render_template('base.html'), \
             constants.HTTP_422_UNPROCESSABLE_ENTITY
 
-    normalize_url = s.get_normalize_url(url)
+    normalize_url = services.get_normalize_url(url)
 
     with database as db_session:
         cursor = db_session.cursor()
@@ -44,10 +45,10 @@ def urls(database: db.Database = db.Database()):
                            (site_id,))
             db_session.commit()
 
-            flash(s.FlashMessages.PAGE_SUCCESSFULLY_ADDED.value,
+            flash(services.FlashMessages.PAGE_SUCCESSFULLY_ADDED.value,
                   constants.FLASH_SUCCESS)
         else:
-            flash(s.FlashMessages.PAGE_ALREADY_EXIST.value,
+            flash(services.FlashMessages.PAGE_ALREADY_EXIST.value,
                   constants.FLASH_NOTIFY)
 
     return redirect(url_for('routes.site', _id=site_id[0]))
@@ -105,13 +106,13 @@ def check_url(
                         WHERE id=%s""", (_id,))
         resource_url = cursor.fetchone()[0]
         try:
-            status_code = s.get_status_code(resource_url)
-        except VerificationError:
-            flash(s.FlashMessages.VERIFICATION_ERROR.value,
+            status_code = services.get_status_code(resource_url)
+        except services.VerificationError:
+            flash(services.FlashMessages.VERIFICATION_ERROR.value,
                   constants.FLASH_ERROR)
             return redirect(url_for('routes.site', _id=_id))
 
-        seo_info = s.get_seo_info(resource_url)
+        seo_info = services.get_seo_info(resource_url)
         cursor.execute("""INSERT INTO url_checks
                         (url_id, status_code, h1,
                         title, description, created_at)
@@ -128,7 +129,7 @@ def check_url(
                         status_code, _id))
 
         database.session.commit()
-        flash(s.FlashMessages.PAGE_SUCCESSFULLY_CHECKED.value,
+        flash(services.FlashMessages.PAGE_SUCCESSFULLY_CHECKED.value,
               constants.FLASH_SUCCESS)
 
     return redirect(url_for('routes.site', _id=_id))

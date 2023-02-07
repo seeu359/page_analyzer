@@ -6,11 +6,15 @@ import bs4
 import requests
 import validators
 
-from page_analyzer.exceptions import VerificationError
 from page_analyzer.constants import HTTP_200_OK
 
 
 HTTPStatusCode = int
+URL = str
+
+
+class VerificationError(Exception):
+    pass
 
 
 class UrlSEOInfo(NamedTuple):
@@ -31,7 +35,7 @@ def is_valid_url(url: str) -> bool:
     return isinstance(validators.url(url), bool)
 
 
-def get_normalize_url(url: str) -> str:
+def get_normalize_url(url: str) -> URL:
     scheme = urlparse(url).scheme
     netloc = urlparse(url).netloc
     return f'{scheme}://{netloc}'

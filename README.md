@@ -15,9 +15,7 @@ A site that analyzes said pages for SEO suitability similar to varvy
 
 1. Clone repo: ``$ git clone https://github.com/seeu359/python-project-83``
 2. Go to the directory with code: ``$ cd python-project-83``
-3. Install the dependencies:
-   1. If you're using poetry, run command: ``$ make p_install``
-   2. Else: ``$ make install``
+3. Install the dependencies: ``$ make install``
 
 ### Environment variables:
 

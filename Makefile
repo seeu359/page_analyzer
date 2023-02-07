@@ -10,8 +10,6 @@ sort:
 lint:
 	poetry run flake8
 
-p_install:
+install:
 	poetry install
 
-install:
-	pip install -r requirements.txt
