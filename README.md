@@ -8,6 +8,7 @@ Railway deploy: https://python-project-83-production-fe26.up.railway.app/
 ### Description
 
 A site that analyzes said pages for SEO suitability similar to varvy
+Written by Flask
 
 ---
 
